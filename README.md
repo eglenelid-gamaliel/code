@@ -7,8 +7,8 @@ Currently the project it's on early development stages
 ## Features
 
   - Open file (Choose a file and place it on a new tab)
-  - Create file (Create a new text editor on a new tab)
-  - Save (Overwrite) 
+  - New file (Create a new text editor on a new tab)
+  - Save (Overwrite)
   - Save as... (Optional for existing files but mandatory for new files)
   - Tab navigation (to edit multiple files at the same time)
   - Keyboard shortcuts
