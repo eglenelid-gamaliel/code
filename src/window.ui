@@ -162,7 +162,7 @@
 
       <!-- About the app -->
       <item>
-        <attribute name="label" translatable="yes">_About code</attribute>
+        <attribute name="label" translatable="yes">_About Code</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>
