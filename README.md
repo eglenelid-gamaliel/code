@@ -13,11 +13,16 @@ Currently the project it's on early development stages
   - Tab navigation (to edit multiple files at the same time)
   - Keyboard shortcuts
 
-## Roadmap
+## Roadmap to v1.0
   - Be GNOME Human Interface Guidelines compliant (Icons, alerts, toasts, etc)
-  - Have an adaptive sidebar to browse files on the workspace folder
+  - Have an adaptive and toggleable sidebar to browse files on the workspace folder
   - Have a functional theming API
   - Expose the editor settings through a preferences dialog
+  - Have a togleable terminal targetting to the workspace folder
+
+### Future
+  - Develop a Git panel to manage pulls, files to commit and change between branches
+  - Develop an extension API to integrate development tools like pylint, black, jedi, etc...
 
 ## Development and building
   The app can be build with GNOME Builder, the goal is to distribute it through Flatpak
