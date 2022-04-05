@@ -202,7 +202,7 @@ class CodeWindow(Adw.ApplicationWindow):
 class AboutDialog(Gtk.AboutDialog):
     def __init__(self, parent):
         Gtk.AboutDialog.__init__(self)
-        self.props.program_name = "GNOME Code"
+        self.props.program_name = "Code"
         self.props.version = "0.0.1"
         self.props.authors = ["Eglenelid Gamaliel Gutierrez Hernandez"]
         self.props.copyright = "2022 Eglenelid Gamaliel Gutierrez Hernandez"
