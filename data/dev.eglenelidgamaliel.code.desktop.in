@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=code
+Exec=code
+Icon=dev.eglenelidgamaliel.code
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

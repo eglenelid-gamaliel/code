@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- Requirements -->
+  <requires lib="gtk" version="4.0" />
+  <requires lib="adw" version="1.0" />
+  <requires lib="gtksource" version="5.0" />
+
+  <!-- Window's Template -->
+  <template class="CodeWindow" parent="AdwApplicationWindow">
+    <!-- Window's properties -->
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+
+    <!-- Header bar styles -->
+    <style>
+      <class name="devel" />
+    </style>
+
+    <!-- Window's content -->
+    <property name="content">
+
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+
+        <!-- Header bar -->
+        <child type="titlebar">
+          <object class="AdwHeaderBar">
+
+            <!-- Header bar title widget -->
+            <property name="title-widget">
+              <object class="AdwWindowTitle">
+                <!-- Title -->
+                <property name="title" translatable="yes"></property>
+                <!-- Subtitle -->
+                <property name="subtitle" translatable="yes">Code: Text Editor</property>
+              </object>
+            </property>
+
+            <!-- Sidebar toogle button at the beginning -->
+            <child type="start">
+              <object class="GtkToggleButton" id="toggle_sidebar">
+                <property name="active">True</property>
+                <property name="child">
+                  <object class="AdwButtonContent">
+                    <property name="icon-name">sidebar-show-symbolic</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+
+            <!-- Header bar elements at the end -->
+            <child type="end">
+              <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">primary_menu</property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <!-- Window Body -->
+        <child>
+          <object class="AdwLeaflet">
+
+            <!-- Set the file list and the content pages as scrollable -->
+            <property name="can-navigate-back">True</property>
+            <property name="can-navigate-forward">True</property>
+
+            <!-- Sidebar -->
+            <child>
+              <object class="AdwLeafletPage">
+                <property name="navigatable">True</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="vexpand">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="margin-top">24</property>
+                    <property name="margin-bottom">24</property>
+                    <property name="margin-start">12</property>
+                    <property name="spacing">24</property>
+                    <child>
+                      <object class="GtkListBox"></object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+
+            <!-- Content -->
+            <child>
+              <!-- Main container -->
+              <object class="GtkBox">
+
+                <!-- Container properties -->
+                <property name="orientation">vertical</property>
+                <property name="hexpand">True</property>
+
+                <!-- Tab bar -->
+                <child>
+                  <object class="AdwTabBar" id="tab_bar">
+                    <property name="view">tab_view</property>
+                  </object>
+                </child>
+
+                <!-- Tabview -->
+                <child>
+                  <object class="AdwTabView" id="tab_view">
+                    <!-- Tabs -->
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+
+  <!-- Primary menu in the header bar -->
+  <menu id="primary_menu">
+    <section>
+
+      <!-- New file action -->
+      <item>
+        <attribute name="label" translatable="yes">_New file</attribute>
+        <attribute name="action">win.new_file</attribute>
+      </item>
+
+      <!-- Open file action -->
+      <item>
+        <attribute name="label" translatable="yes">_Open file</attribute>
+        <attribute name="action">win.open_file</attribute>
+      </item>
+    </section>
+
+    <section>
+      <!-- Save file action -->
+      <item>
+        <attribute name="label" translatable="yes">_Save</attribute>
+        <attribute name="action">win.save</attribute>
+      </item>
+
+      <!-- Save as... file action -->
+      <item>
+        <attribute name="label" translatable="yes">_Save as...</attribute>
+        <attribute name="action">win.save_as</attribute>
+      </item>
+    </section>
+
+    <section>
+      <!-- Preferences -->
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+
+      <!-- Keyboard shortcuts -->
+      <item>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
+      </item>
+
+      <!-- About the app -->
+      <item>
+        <attribute name="label" translatable="yes">_About code</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>
