@@ -20,4 +20,4 @@ Currently the project it's on early development stages
   - Expose the editor settings through a preferences dialog
 
 ## Development and building
-  The app can be build through GNOME Builder, the goal is to distribute it through Flatpak
+  The app can be build with GNOME Builder, the goal is to distribute it through Flatpak
