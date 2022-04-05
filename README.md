@@ -14,11 +14,12 @@ Currently the project it's on early development stages
   - Keyboard shortcuts
 
 ## Roadmap to v1.0
-  - Be GNOME Human Interface Guidelines compliant (Icons, alerts, toasts, etc)
   - Have an adaptive and toggleable sidebar to browse files on the workspace folder
-  - Have a functional theming API
-  - Expose the editor settings through a preferences dialog
+  - Save the app state and auto save files
   - Have a togleable terminal targetting to the workspace folder
+  - Expose the editor settings through a preferences dialog
+  - Be GNOME Human Interface Guidelines compliant (Icons, alerts, toasts, etc)
+  - Have a functional theming API
 
 ### Future
   - Develop a Git panel to manage pulls, files to commit and change between branches
