@@ -16,7 +16,7 @@ Currently the project it's on early development stages
 ## Roadmap to v1.0
   - Have an adaptive and toggleable sidebar to browse files on the workspace folder
   - Save the app state and auto save files
-  - Have a togleable terminal targetting to the workspace folder
+  - Have a toggleable terminal targetting to the workspace folder
   - Expose the editor settings through a preferences dialog
   - Be GNOME Human Interface Guidelines compliant (Icons, alerts, toasts, etc)
   - Have a functional theming API
