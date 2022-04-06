@@ -15,9 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from pathlib import Path
+
 from gi.repository import Adw, Gio, GLib, Gtk
 
-from .widgets import Codeview
+from .widgets import Codeview, FileRow, FolderRow
 
 
 @Gtk.Template(resource_path="/dev/eglenelidgamaliel/code/window.ui")
@@ -26,9 +28,16 @@ class CodeWindow(Adw.ApplicationWindow):
 
     # Get the tabview widget
     tab_view = Gtk.Template.Child()
+    flap = Gtk.Template.Child()
+    file_explorer_list = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        # Create the 'toggle_sidebar' action referenced in window.ui
+        toggle_sidebar_action = Gio.SimpleAction(name="toggle_sidebar")
+        toggle_sidebar_action.connect("activate", self.on_toggle_sidebar)
+        self.add_action(toggle_sidebar_action)
 
         # Create the 'new_file' action referenced in window.ui
         new_file_action = Gio.SimpleAction(name="new_file")
@@ -40,6 +49,11 @@ class CodeWindow(Adw.ApplicationWindow):
         open_file_action.connect("activate", self.open_file_dialog)
         self.add_action(open_file_action)
 
+        # Create the 'open_folder' action referenced in window.ui
+        open_folder_action = Gio.SimpleAction(name="open_folder")
+        open_folder_action.connect("activate", self.open_folder_dialog)
+        self.add_action(open_folder_action)
+
         # Create the 'save' action referenced in window.ui
         save_action = Gio.SimpleAction(name="save")
         save_action.connect("activate", self.save)
@@ -50,6 +64,18 @@ class CodeWindow(Adw.ApplicationWindow):
         save_as_action.connect("activate", self.save_as_file_dialog)
         self.add_action(save_as_action)
 
+        # Create the GSettings instance for the app schema id
+        self.settings = Gio.Settings(schema_id="dev.eglenelidgamaliel.code")
+
+        # Remember the window size
+        self.settings.bind("window-width", self, "default-width", Gio.SettingsBindFlags.DEFAULT)
+        self.settings.bind("window-height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
+        self.settings.bind("window-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)
+
+    def on_toggle_sidebar(self, action, _):
+        self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
+
+    # Save (or overwrite) the file
     def save(self, action, _):
         # Check if there is a file associated with the current code view
         code_view = self.tab_view.get_selected_page().get_child().get_child()
@@ -58,6 +84,7 @@ class CodeWindow(Adw.ApplicationWindow):
         else:
             self.save_as_file_dialog()
 
+    # Save the file as
     def save_as_file_dialog(self, action=None, _=None):
         self._native = Gtk.FileChooserNative(
             title="Save File As",
@@ -69,11 +96,13 @@ class CodeWindow(Adw.ApplicationWindow):
         self._native.connect("response", self.on_save_response)
         self._native.show()
 
+    # Called when the file chooser dialog is closed
     def on_save_response(self, native, response):
         if response == Gtk.ResponseType.ACCEPT:
             self.save_file(native.get_file())
         self._native = None
 
+    # Function called when the file contents are saved
     def save_file(self, file):
         # Retrieve the current editor widget
         buffer = self.tab_view.get_selected_page().get_child().get_child().get_buffer()
@@ -94,6 +123,7 @@ class CodeWindow(Adw.ApplicationWindow):
         # Start the asynchronous operation to save the data into the file
         file.replace_contents_bytes_async(bytes, None, False, Gio.FileCreateFlags.NONE, None, self.save_file_complete)
 
+    # Function called when the file contents finish saving
     def save_file_complete(self, file, result):
         res = file.replace_contents_finish(result)
         info = file.query_info("standard::display-name", Gio.FileQueryInfoFlags.NONE)
@@ -101,8 +131,6 @@ class CodeWindow(Adw.ApplicationWindow):
             display_name = info.get_attribute_string("standard::display-name")
         else:
             display_name = file.get_basename()
-        if not res:
-            print(f"Unable to save {display_name}")
 
         code_view = self.tab_view.get_selected_page().get_child().get_child()
         code_view.file = file
@@ -111,11 +139,12 @@ class CodeWindow(Adw.ApplicationWindow):
         current_page.set_title(file.get_basename())
         current_page.set_tooltip(file.get_path())
 
+    # Open file action callback
     def open_file_dialog(self, action, parameter):
         # Create a new file selection dialog, using the "open" mode
         # and keep a reference to it
         self._native = Gtk.FileChooserNative(
-            title="Open File",
+            title="Open file",
             transient_for=self,
             action=Gtk.FileChooserAction.OPEN,
             accept_label="_Open",
@@ -128,6 +157,7 @@ class CodeWindow(Adw.ApplicationWindow):
         # Present the dialog to the user
         self._native.show()
 
+    # Called when the file chooser dialog is closed
     def on_open_response(self, dialog, response):
         # If the user selected a file...
         if response == Gtk.ResponseType.ACCEPT:
@@ -137,24 +167,28 @@ class CodeWindow(Adw.ApplicationWindow):
         # do not need it any more
         self._native = None
 
+    # Function to open a file asynchronously
     def open_file(self, file):
-        # Load the file contents asynchronously
-        file.load_contents_async(None, self.open_file_complete)
+        file_path = Path(file.get_path())
+        if file_path.is_dir():
+            self.open_folder(file_path)
+        else:
+            # Load the file contents asynchronously
+            file.load_contents_async(None, self.open_file_complete)
 
+    # Function called when the file contents finish loading
     def open_file_complete(self, file, result):
         contents = file.load_contents_finish(result)
 
         # Try to open the file
         if not contents[0]:
             path = file.peek_path()
-            print(f"Unable to open {path}: {contents[1]}")
 
         # Check if the file is a text file and UTF-8 encoding
         try:
             text = contents[1].decode("utf-8")
         except UnicodeError as err:
             path = file.peek_path()
-            print(f"Unable to load the contents of {path}: the file is not encoded with UTF-8")
             return
 
         # Create a new editor widget
@@ -182,6 +216,50 @@ class CodeWindow(Adw.ApplicationWindow):
 
         new_gtksource_view.grab_focus()
 
+    # Open folder action callback
+    def open_folder_dialog(self, action, parameter):
+        self._native = Gtk.FileChooserNative(
+            title="Open folder",
+            transient_for=self,
+            action=Gtk.FileChooserAction.SELECT_FOLDER,
+            accept_label="_Open",
+            cancel_label="_Cancel",
+        )
+        self._native.connect("response", self.on_open_folder_response)
+        self._native.show()
+
+    # Called when the folder chooser dialog is closed
+    def on_open_folder_response(self, dialog, response):
+        # If the user selected a file...
+        if response == Gtk.ResponseType.ACCEPT:
+            # ... retrieve the location from the dialog and open it
+            self.open_file(dialog.get_file())
+        # Release the reference on the file selection dialog now that we
+        # do not need it any more
+        self._native = None
+
+    def open_folder(self, folder_path: Path, parent_folder_row=None):
+
+        # Create side bar entries for each file in the folder
+        for file in folder_path.iterdir():
+            if file.name.startswith("."):
+                continue
+            if file.is_dir():
+                new_folder_row = FolderRow(file)
+                if parent_folder_row:
+                    parent_folder_row.add_row(new_folder_row)
+                else:
+                    self.file_explorer_list.append(new_folder_row)
+                self.open_folder(file, new_folder_row)
+
+            if file.is_file():
+                new_file_row = FileRow(file)
+                if parent_folder_row:
+                    parent_folder_row.add_row(new_file_row)
+                else:
+                    self.file_explorer_list.append(new_file_row)
+
+    # New file action callback
     def on_new_file(self, action, parameter):
         # Create a new editor widget
         new_gtksource_view = Codeview()

@@ -42,12 +42,14 @@ class CodeApplication(Adw.Application):
         self.create_action("quit", self.on_quit)
 
         # Map the keyboard shortcuts
+        self.set_accels_for_action("win.toggle_sidebar", ["<Ctrl>b"])
         # File actions
         self.set_accels_for_action("win.new_file", ["<Ctrl>n"])
         self.set_accels_for_action("win.open_file", ["<Ctrl>o"])
+        self.set_accels_for_action("win.open_folder", ["<Ctrl><Shift>o"])
         # Edit actions
         self.set_accels_for_action("win.save", ["<Ctrl>s"])
-        self.set_accels_for_action("win.save_as", ["<Shift><Ctrl>s"])
+        self.set_accels_for_action("win.save_as", ["<Ctrl><Shift>s"])
         # Application actions
         self.set_accels_for_action("app.quit", ["<Ctrl>q"])
 

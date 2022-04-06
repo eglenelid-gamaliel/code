@@ -8,13 +8,8 @@
   <!-- Window's Template -->
   <template class="CodeWindow" parent="AdwApplicationWindow">
     <!-- Window's properties -->
-    <property name="default-width">800</property>
-    <property name="default-height">600</property>
-
-    <!-- Header bar styles -->
-    <style>
-      <class name="devel" />
-    </style>
+    <property name="default-width">700</property>
+    <property name="default-height">500</property>
 
     <!-- Window's content -->
     <property name="content">
@@ -30,9 +25,9 @@
             <property name="title-widget">
               <object class="AdwWindowTitle">
                 <!-- Title -->
-                <property name="title" translatable="yes"></property>
+                <property name="title" translatable="yes">Code</property>
                 <!-- Subtitle -->
-                <property name="subtitle" translatable="yes">Code: Text Editor</property>
+                <property name="subtitle" translatable="yes">Text Editor</property>
               </object>
             </property>
 
@@ -48,7 +43,7 @@
               </object>
             </child>
 
-            <!-- Header bar elements at the end -->
+            <!-- Main menu button at the end -->
             <child type="end">
               <object class="GtkMenuButton">
                 <property name="icon-name">open-menu-symbolic</property>
@@ -60,34 +55,72 @@
 
         <!-- Window Body -->
         <child>
-          <object class="AdwLeaflet">
 
-            <!-- Set the file list and the content pages as scrollable -->
-            <property name="can-navigate-back">True</property>
-            <property name="can-navigate-forward">True</property>
+          <!-- LibAdwaita flap -->
+          <object class="AdwFlap" id="flap">
+
+            <!-- Flap's Properties -->
+            <property name="reveal-flap" bind-source="toggle_sidebar" bind-property="active" bind-flags="sync-create|bidirectional" />
+            <property name="swipe-to-open">True</property>
+            <property name="swipe-to-close">True</property>
 
             <!-- Sidebar -->
-            <child>
-              <object class="AdwLeafletPage">
-                <property name="navigatable">True</property>
-                <property name="child">
+            <property name="flap">
+
+              <!-- Scrolleable container -->
+              <object class="GtkScrolledWindow">
+
+                <!-- Scrolled window properties -->
+                <property name="vexpand">True</property>
+                <property name="width-request">220</property>
+
+                <!-- Scrolled window content -->
+                <child>
+
+                  <!-- Gtk box container -->
                   <object class="GtkBox">
-                    <property name="vexpand">True</property>
+
+                    <!-- Gtk box properties -->
                     <property name="orientation">vertical</property>
                     <property name="margin-top">24</property>
                     <property name="margin-bottom">24</property>
-                    <property name="margin-start">12</property>
-                    <property name="spacing">24</property>
-                    <child>
-                      <object class="GtkListBox"></object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </child>
+                    <property name="spacing">12</property>
 
-            <!-- Content -->
-            <child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">File explorer</property>
+                        <property name="halign">start</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <style>
+                          <class name="heading" />
+                        </style>
+                      </object>
+                    </child>
+
+                    <!-- Sidebar's content -->
+                    <child>
+                      <object class="GtkListBox" id="file_explorer_list">
+                        <property name="margin-end">6</property>
+                        <style>
+                          <class name="navigation-sidebar" />
+                        </style>
+                      </object>
+                    </child>
+                    <!-- more lists -->
+                  </object>
+                </child>
+              </object>
+            </property>
+
+            <!-- Sidebar's separator -->
+            <property name="separator">
+              <object class="GtkSeparator" />
+            </property>
+
+            <!-- Main content -->
+            <property name="content">
+
               <!-- Main container -->
               <object class="GtkBox">
 
@@ -104,12 +137,10 @@
 
                 <!-- Tabview -->
                 <child>
-                  <object class="AdwTabView" id="tab_view">
-                    <!-- Tabs -->
-                  </object>
+                  <object class="AdwTabView" id="tab_view"></object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
       </object>
@@ -130,6 +161,12 @@
       <item>
         <attribute name="label" translatable="yes">_Open file</attribute>
         <attribute name="action">win.open_file</attribute>
+      </item>
+
+      <!-- Open folder action -->
+      <item>
+        <attribute name="label" translatable="yes">_Open folder</attribute>
+        <attribute name="action">win.open_folder</attribute>
       </item>
     </section>
 

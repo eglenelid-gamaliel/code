@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import GtkSource
+from pathlib import Path
+
+from gi.repository import Adw, Gtk, GtkSource
 
 
 # Subclass GtkSource.View to add custom features.
@@ -30,3 +32,21 @@ class Codeview(GtkSource.View):
         self.set_bottom_margin(10)
 
         self.file = None
+
+
+# Subclass Adw.ActionRow to add custom features.
+class FileRow(Adw.ActionRow):
+    def __init__(self, file_path: Path) -> Gtk.Widget:
+        super().__init__()
+        self.file_path = file_path
+        self.set_title(file_path.name)
+        self.set_icon_name("emblem-documents-symbolic")
+
+
+# Subclass Adw.ActionRow to add custom features.
+class FolderRow(Adw.ExpanderRow):
+    def __init__(self, folder_path: Path) -> Gtk.Widget:
+        super().__init__()
+        self.file_path = folder_path
+        self.set_title(folder_path.name)
+        self.set_icon_name("folder-visiting-symbolic")

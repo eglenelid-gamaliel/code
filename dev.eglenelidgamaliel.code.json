@@ -1,17 +1,19 @@
 {
-    "app-id" : "dev.eglenelidgamaliel.code",
-    "runtime" : "org.gnome.Platform",
-    "runtime-version" : "42",
-    "sdk" : "org.gnome.Sdk",
-    "command" : "code",
-    "finish-args" : [
+    "app-id": "dev.eglenelidgamaliel.code",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "42",
+    "sdk": "org.gnome.Sdk",
+    "command": "code",
+    "finish-args": [
         "--share=network",
         "--share=ipc",
         "--socket=fallback-x11",
         "--device=dri",
-        "--socket=wayland"
+        "--socket=wayland",
+        "--filesystem=host",
+        "--filesystem=home"
     ],
-    "cleanup" : [
+    "cleanup": [
         "/include",
         "/lib/pkgconfig",
         "/man",
@@ -22,26 +24,26 @@
         "*.la",
         "*.a"
     ],
-    "modules" : [
-    	{
-	    "name": "gtksourceview",
-	    "buildsystem": "meson",
-	    "sources": [
-	    	{
-		    "type": "git",
-        	    "url": "https://gitlab.gnome.org/GNOME/gtksourceview.git",
-        	    "tag": "5.4.0"
-    		}
-    	    ]
-    	},
+    "modules": [
         {
-            "name" : "code",
-            "builddir" : true,
-            "buildsystem" : "meson",
-            "sources" : [
+            "name": "gtksourceview",
+            "buildsystem": "meson",
+            "sources": [
                 {
-                    "type" : "git",
-                    "url" : "file:///home/gamaliel/Proyectos/code"
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gtksourceview.git",
+                    "tag": "5.4.0"
+                }
+            ]
+        },
+        {
+            "name": "code",
+            "builddir": true,
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "file:///home/gamaliel/Proyectos/code"
                 }
             ]
         }
