@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pathlib import Path
+import time
 
 from gi.repository import Adw, Gio, GLib, Gtk
 
@@ -30,6 +31,8 @@ class CodeWindow(Adw.ApplicationWindow):
     tab_view = Gtk.Template.Child()
     flap = Gtk.Template.Child()
     file_explorer_list = Gtk.Template.Child()
+    window_title = Gtk.Template.Child()
+    open_folder_button = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -171,7 +174,9 @@ class CodeWindow(Adw.ApplicationWindow):
     def open_file(self, file):
         file_path = Path(file.get_path())
         if file_path.is_dir():
+            start = time.perf_counter()
             self.open_folder(file_path)
+            print(f"Completed Execution in {time.perf_counter() - start} seconds")
         else:
             # Load the file contents asynchronously
             file.load_contents_async(None, self.open_file_complete)
@@ -233,18 +238,27 @@ class CodeWindow(Adw.ApplicationWindow):
         # If the user selected a file...
         if response == Gtk.ResponseType.ACCEPT:
             # ... retrieve the location from the dialog and open it
+            self.open_folder_button.set_visible(False)
+            self.file_explorer_list.set_visible(True)
+            list_has_rows = self.file_explorer_list.get_row_at_index(0)
+            while list_has_rows != None:
+                self.file_explorer_list.remove(self.file_explorer_list.get_row_at_index(0))
+                list_has_rows = self.file_explorer_list.get_row_at_index(0)
+
+            folder_path = Path(dialog.get_file().get_path())
+            self.window_title.set_title(folder_path.name.title())
+
             self.open_file(dialog.get_file())
         # Release the reference on the file selection dialog now that we
         # do not need it any more
         self._native = None
 
     def open_folder(self, folder_path: Path, parent_folder_row=None):
-
         # Create side bar entries for each file in the folder
         for file in folder_path.iterdir():
             if file.name.startswith("."):
                 continue
-            if file.is_dir():
+            elif file.is_dir():
                 new_folder_row = FolderRow(file)
                 if parent_folder_row:
                     parent_folder_row.add_row(new_folder_row)
@@ -252,7 +266,7 @@ class CodeWindow(Adw.ApplicationWindow):
                     self.file_explorer_list.append(new_folder_row)
                 self.open_folder(file, new_folder_row)
 
-            if file.is_file():
+            elif file.is_file():
                 new_file_row = FileRow(file)
                 new_file_row.connect("activated", self.on_file_selected)
                 if parent_folder_row:

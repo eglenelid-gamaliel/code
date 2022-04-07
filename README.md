@@ -11,10 +11,10 @@ Currently the project it's on early development stages
   - Save (Overwrite)
   - Save as... (Optional for existing files but mandatory for new files)
   - Tab navigation (to edit multiple files at the same time)
+  - Toggleable sidebar to browse files on the workspace folder
   - Keyboard shortcuts
 
 ## Roadmap to v1.0
-  - Have an adaptive and toggleable sidebar to browse files on the workspace folder
   - Save the app state and auto save files
   - Have a toggleable terminal targetting to the workspace folder
   - Expose the editor settings through a preferences dialog
