@@ -254,6 +254,7 @@ class CodeWindow(Adw.ApplicationWindow):
 
             if file.is_file():
                 new_file_row = FileRow(file)
+                new_file_row.connect("activated", self.on_file_selected)
                 if parent_folder_row:
                     parent_folder_row.add_row(new_file_row)
                 else:
@@ -275,6 +276,11 @@ class CodeWindow(Adw.ApplicationWindow):
         newly_created_page.set_tooltip("Untitled")
 
         new_gtksource_view.grab_focus()
+
+    # File selected callback
+    def on_file_selected(self, action_row: Adw.ActionRow) -> None:
+        gfile = Gio.File.new_for_path(str(action_row.file_path))
+        self.open_file(gfile)
 
 
 class AboutDialog(Gtk.AboutDialog):

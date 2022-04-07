@@ -41,6 +41,8 @@ class FileRow(Adw.ActionRow):
         self.file_path = file_path
         self.set_title(file_path.name)
         self.set_icon_name("emblem-documents-symbolic")
+        self.set_activatable(True)
+        self.set_selectable(False)
 
 
 # Subclass Adw.ActionRow to add custom features.
@@ -50,3 +52,5 @@ class FolderRow(Adw.ExpanderRow):
         self.file_path = folder_path
         self.set_title(folder_path.name)
         self.set_icon_name("folder-visiting-symbolic")
+        self.set_activatable(True)
+        self.set_selectable(False)
