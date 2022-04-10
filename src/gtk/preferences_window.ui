@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- Requirements -->
+  <requires lib="gtk" version="4.0" />
+  <requires lib="adw" version="1.0" />
+  <requires lib="gtksource" version="5.0" />
+
+  <!-- Window's Template -->
+  <template class="PreferencesWindow" parent="AdwPreferencesWindow">
+
+    <!-- Window's content -->
+    <property name="visible-page">
+      <object class="AdwClamp">
+        <property name="child">
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="margin-top">24</property>
+            <property name="margin-bottom">24</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="spacing">24</property>
+            <child>
+              <object class="GtkListBox">
+                <property name="selection-mode">none</property>
+                <style>
+                  <class name="boxed-list" />
+                </style>
+                <!-- rows -->
+              </object>
+            </child>
+            <!-- more lists -->
+          </object>
+        </property>
+      </object>
+
+    </property>
+  </template>
+</interface>

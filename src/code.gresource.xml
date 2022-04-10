@@ -3,5 +3,6 @@
   <gresource prefix="/dev/eglenelidgamaliel/code">
     <file>window.ui</file>
     <file>gtk/help-overlay.ui</file>
+    <file>gtk/preferences_window.ui</file>
   </gresource>
 </gresources>

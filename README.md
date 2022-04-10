@@ -5,7 +5,6 @@ A text editor built with GTK 4, LibAdwaita 1 and GtkSourceView 5, written in Pyt
 Currently the project it's on early development stages
 
 ## Features
-
   - Open file (Choose a file and place it on a new tab)
   - New file (Create a new text editor on a new tab)
   - Save (Overwrite)

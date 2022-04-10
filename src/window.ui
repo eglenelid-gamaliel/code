@@ -79,7 +79,7 @@
 
                 <!-- Scrolled window properties -->
                 <property name="vexpand">True</property>
-                <property name="width-request">240</property>
+                <property name="width-request">245</property>
 
                 <style>
                   <class name="background" />
@@ -89,12 +89,14 @@
                 <child>
 
                   <!-- Gtk box container -->
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="sidebar_box">
 
                     <!-- Gtk box properties -->
                     <property name="orientation">vertical</property>
                     <property name="margin-top">24</property>
                     <property name="margin-bottom">24</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
                     <property name="spacing">12</property>
 
                     <child>
@@ -112,8 +114,8 @@
                     <child>
                       <object class="GtkButton" id="open_folder_button">
                         <property name="action-name">win.open_folder</property>
-                        <property name="margin-start">18</property>
-                        <property name="margin-end">18</property>
+                        <property name="margin-start">6</property>
+                        <property name="margin-end">6</property>
                         <style>
                           <class name="pill" />
                           <class name="suggested-action" />
@@ -124,19 +126,6 @@
                             <property name="label" translatable="yes">Open folder</property>
                           </object>
                         </property>
-                      </object>
-                    </child>
-
-                    <!-- Sidebar's content -->
-                    <child>
-                      <object class="GtkListBox" id="file_explorer_list">
-                        <property name="selection-mode">single</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">18</property>
-                        <property name="visible">False</property>
-                        <style>
-                          <class name="boxed-list" />
-                        </style>
                       </object>
                     </child>
                   </object>
@@ -163,6 +152,7 @@
                 <child>
                   <object class="AdwTabBar" id="tab_bar">
                     <property name="view">tab_view</property>
+                    <property name="expand-tabs">False</property>
                     <style>
                       <class name="inline" />
                     </style>

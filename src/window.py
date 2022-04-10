@@ -20,19 +20,25 @@ from pathlib import Path
 
 from gi.repository import Adw, Gio, GLib, Gtk
 
-from .widgets import Codeview, FileRow, FolderRow
+from .widgets import Codeview, FileExplorerView
 
 
 @Gtk.Template(resource_path="/dev/eglenelidgamaliel/code/window.ui")
 class CodeWindow(Adw.ApplicationWindow):
     __gtype_name__ = "CodeWindow"
 
-    # Get the tabview widget
-    tab_view = Gtk.Template.Child()
-    flap = Gtk.Template.Child()
-    file_explorer_list = Gtk.Template.Child()
+    # Map widgets from the template
+
+    # Window
     window_title = Gtk.Template.Child()
+    # Flap
+    flap = Gtk.Template.Child()
+    # Sidebar
     open_folder_button = Gtk.Template.Child()
+    sidebar_box = Gtk.Template.Child()
+    tree_view = None
+    # Tabs
+    tab_view = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -239,40 +245,31 @@ class CodeWindow(Adw.ApplicationWindow):
         if response == Gtk.ResponseType.ACCEPT:
             # ... retrieve the location from the dialog and open it
             self.open_folder_button.set_visible(False)
-            self.file_explorer_list.set_visible(True)
-            list_has_rows = self.file_explorer_list.get_row_at_index(0)
-            while list_has_rows != None:
-                self.file_explorer_list.remove(self.file_explorer_list.get_row_at_index(0))
-                list_has_rows = self.file_explorer_list.get_row_at_index(0)
 
             folder_path = Path(dialog.get_file().get_path())
-            self.window_title.set_title(folder_path.name.title())
+            self.window_title.set_title(folder_path.name)
 
-            self.open_file(dialog.get_file())
+            try:
+                self.sidebar_box.remove(self.tree_view)
+            except Exception:
+                pass
+
+            self.tree_view = FileExplorerView(dialog.get_file())
+            select = self.tree_view.get_selection()
+            select.connect("changed", self.on_tree_selection_changed)
+            self.sidebar_box.append(self.tree_view)
+
         # Release the reference on the file selection dialog now that we
         # do not need it any more
         self._native = None
 
-    def open_folder(self, folder_path: Path, parent_folder_row=None):
-        # Create side bar entries for each file in the folder
-        for file in folder_path.iterdir():
-            if file.name.startswith("."):
-                continue
-            elif file.is_dir():
-                new_folder_row = FolderRow(file)
-                if parent_folder_row:
-                    parent_folder_row.add_row(new_folder_row)
-                else:
-                    self.file_explorer_list.append(new_folder_row)
-                self.open_folder(file, new_folder_row)
-
-            elif file.is_file():
-                new_file_row = FileRow(file)
-                new_file_row.connect("activated", self.on_file_selected)
-                if parent_folder_row:
-                    parent_folder_row.add_row(new_file_row)
-                else:
-                    self.file_explorer_list.append(new_file_row)
+    def on_tree_selection_changed(self, selection):
+        model, treeiter = selection.get_selected()
+        if treeiter is not None:
+            path = Path(model[treeiter][1])
+            if not path.is_dir():
+                gfile = Gio.File.new_for_path(model[treeiter][1])
+                self.open_file(gfile)
 
     # New file action callback
     def on_new_file(self, action, parameter):
@@ -291,11 +288,6 @@ class CodeWindow(Adw.ApplicationWindow):
 
         new_gtksource_view.grab_focus()
 
-    # File selected callback
-    def on_file_selected(self, action_row: Adw.ActionRow) -> None:
-        gfile = Gio.File.new_for_path(str(action_row.file_path))
-        self.open_file(gfile)
-
 
 class AboutDialog(Gtk.AboutDialog):
     def __init__(self, parent):
@@ -307,3 +299,17 @@ class AboutDialog(Gtk.AboutDialog):
         self.props.logo_icon_name = "dev.eglenelidgamaliel.code"
         self.props.modal = True
         self.set_transient_for(parent)
+
+
+@Gtk.Template(resource_path="/dev/eglenelidgamaliel/code/gtk/preferences_window.ui")
+class PreferencesWindow(Adw.PreferencesWindow):
+    __gtype_name__ = "PreferencesWindow"
+
+    # preferences_box = Gtk.Template.Child()
+
+    def __init__(self, parent):
+        Adw.PreferencesWindow.__init__(self)
+        self.props.modal = True
+        self.set_transient_for(parent)
+
+        # self.preferences_box.append(GtkSource.StyleSchemeChooserButton())

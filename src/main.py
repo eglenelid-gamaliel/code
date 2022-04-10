@@ -25,7 +25,7 @@ gi.require_version("GtkSource", "5")
 
 from gi.repository import Adw, Gio, GObject, Gtk, GtkSource
 
-from .window import AboutDialog, CodeWindow
+from .window import AboutDialog, CodeWindow, PreferencesWindow
 
 GObject.type_register(GtkSource.View)
 
@@ -71,7 +71,8 @@ class CodeApplication(Adw.Application):
 
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
-        pass
+        about = PreferencesWindow(self.props.active_window)
+        about.present()
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
