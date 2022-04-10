@@ -38,6 +38,7 @@ class CodeWindow(Adw.ApplicationWindow):
     sidebar_box = Gtk.Template.Child()
     tree_view = None
     # Tabs
+    toast_overlay = Gtk.Template.Child()
     tab_view = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
@@ -134,19 +135,15 @@ class CodeWindow(Adw.ApplicationWindow):
 
     # Function called when the file contents finish saving
     def save_file_complete(self, file, result):
-        res = file.replace_contents_finish(result)
-        info = file.query_info("standard::display-name", Gio.FileQueryInfoFlags.NONE)
-        if info:
-            display_name = info.get_attribute_string("standard::display-name")
-        else:
-            display_name = file.get_basename()
-
         code_view = self.tab_view.get_selected_page().get_child().get_child()
         code_view.file = file
 
         current_page = self.tab_view.get_selected_page()
         current_page.set_title(file.get_basename())
         current_page.set_tooltip(file.get_path())
+
+        # Show a toast for the successful save
+        self.toast_overlay.add_toast(Adw.Toast(title="File saved successfully", timeout=1))
 
     # Open file action callback
     def open_file_dialog(self, action, parameter):

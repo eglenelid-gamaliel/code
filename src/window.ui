@@ -163,9 +163,13 @@
                   <object class="GtkSeparator" />
                 </child>
 
-                <!-- Tabview -->
                 <child>
-                  <object class="AdwTabView" id="tab_view"></object>
+                  <object class="AdwToastOverlay" id="toast_overlay">
+                    <property name="child">
+                      <!-- Tabview -->
+                      <object class="AdwTabView" id="tab_view"></object>
+                    </property>
+                  </object>
                 </child>
               </object>
             </property>

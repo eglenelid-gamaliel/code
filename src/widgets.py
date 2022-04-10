@@ -34,28 +34,6 @@ class Codeview(GtkSource.View):
         self.file = None
 
 
-# Subclass Adw.ActionRow to add custom features.
-class FileRow(Adw.ActionRow):
-    def __init__(self, file_path: Path) -> Gtk.Widget:
-        super().__init__()
-        self.file_path = file_path
-        self.set_title(file_path.name)
-        self.set_icon_name("emblem-documents-symbolic")
-        self.set_activatable(True)
-        self.set_selectable(False)
-
-
-# Subclass Adw.ActionRow to add custom features.
-class FolderRow(Adw.ExpanderRow):
-    def __init__(self, folder_path: Path) -> Gtk.Widget:
-        super().__init__()
-        self.file_path = folder_path
-        self.set_title(folder_path.name)
-        self.set_icon_name("folder-visiting-symbolic")
-        self.set_activatable(True)
-        self.set_selectable(False)
-
-
 # Subclass Gtk.TreeStore to add custom features.
 class FileExplorerTreeStore(Gtk.TreeStore):
     def __init__(self, folder) -> Gtk.TreeStore:
