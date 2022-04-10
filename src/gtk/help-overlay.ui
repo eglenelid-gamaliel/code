@@ -8,15 +8,17 @@
         <property name="max-height">10</property>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes" context="shortcut window">General</property>
+            <property name="title" translatable="yes" context="shortcut window">Files</property>
 
-            <!-- File actions -->
+            <!-- New file -->
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">New file</property>
                 <property name="action-name">win.new_file</property>
               </object>
             </child>
+
+            <!-- Open file -->
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Open file</property>
@@ -24,25 +26,41 @@
               </object>
             </child>
 
-            <!-- Edit actions -->
+            <!-- Open folder -->
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Open folder</property>
+                <property name="action-name">win.open_folder</property>
+              </object>
+            </child>
+
+            <!-- Save file -->
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Save</property>
                 <property name="action-name">win.save</property>
               </object>
             </child>
+
+            <!-- Save file as -->
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Save As</property>
                 <property name="action-name">win.save_as</property>
               </object>
             </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes" context="shortcut window">Window</property>
 
             <!-- App actions -->
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Show Shortcuts</property>
-                <property name="action-name">win.show-help-overlay</property>
+                <property name="title" translatable="yes" context="shortcut window">Toogle sidebar</property>
+                <property name="action-name">win.toggle_sidebar</property>
               </object>
             </child>
             <child>
