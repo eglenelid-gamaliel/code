@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="code">
-	<schema id="dev.eglenelidgamaliel.code" path="/dev/eglenelidgamaliel/code/">
-	  <key name="window-width" type="i">
+  <schema id="dev.eglenelidgamaliel.code" path="/dev/eglenelidgamaliel/code/">
+    <key name="window-width" type="i">
       <default>700</default>
     </key>
     <key name="window-height" type="i">
@@ -10,5 +10,8 @@
     <key name="window-maximized" type="b">
       <default>false</default>
     </key>
-	</schema>
+    <key name="code-view-style-scheme" type="s">
+      <default>"classic"</default>
+    </key>
+  </schema>
 </schemalist>

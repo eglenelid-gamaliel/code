@@ -20,9 +20,6 @@
         <!-- Header bar -->
         <child type="titlebar">
           <object class="AdwHeaderBar">
-            <style>
-              <class name="flat" />
-            </style>
 
             <!-- Header bar title widget -->
             <property name="title-widget">
@@ -34,15 +31,23 @@
               </object>
             </property>
 
-            <!-- Sidebar toogle button at the beginning -->
+            <!-- Header bar actions -->
             <child type="start">
-              <object class="GtkToggleButton" id="toggle_sidebar">
-                <property name="active">True</property>
-                <property name="child">
-                  <object class="AdwButtonContent">
-                    <property name="icon-name">sidebar-show-symbolic</property>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">30</property>
+
+                <!-- Sidebar toogle button -->
+                <child>
+                  <object class="GtkToggleButton" id="toggle_sidebar">
+                    <property name="active">False</property>
+                    <property name="child">
+                      <object class="AdwButtonContent">
+                        <property name="icon-name">sidebar-show-symbolic</property>
+                      </object>
+                    </property>
                   </object>
-                </property>
+                </child>
               </object>
             </child>
 
@@ -54,10 +59,6 @@
               </object>
             </child>
           </object>
-        </child>
-
-        <child>
-          <object class="GtkSeparator" />
         </child>
 
         <!-- Window Body -->
@@ -79,7 +80,7 @@
 
                 <!-- Scrolled window properties -->
                 <property name="vexpand">True</property>
-                <property name="width-request">245</property>
+                <property name="width-request">240</property>
 
                 <style>
                   <class name="background" />
@@ -93,8 +94,8 @@
 
                     <!-- Gtk box properties -->
                     <property name="orientation">vertical</property>
-                    <property name="margin-top">24</property>
-                    <property name="margin-bottom">24</property>
+                    <property name="margin-top">12</property>
+                    <property name="margin-bottom">12</property>
                     <property name="margin-start">12</property>
                     <property name="margin-end">12</property>
                     <property name="spacing">12</property>
@@ -103,8 +104,6 @@
                       <object class="GtkLabel">
                         <property name="label" translatable="yes">File explorer:</property>
                         <property name="halign">start</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">18</property>
                         <style>
                           <class name="heading" />
                         </style>
@@ -114,16 +113,14 @@
                     <child>
                       <object class="GtkButton" id="open_folder_button">
                         <property name="action-name">win.open_folder</property>
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">6</property>
                         <style>
-                          <class name="pill" />
                           <class name="suggested-action" />
                         </style>
                         <property name="child">
                           <object class="AdwButtonContent">
                             <property name="icon-name">document-open-symbolic</property>
                             <property name="label" translatable="yes">Open folder</property>
+                            <property name="halign">center</property>
                           </object>
                         </property>
                       </object>
@@ -151,18 +148,31 @@
                 <!-- Tab bar -->
                 <child>
                   <object class="AdwTabBar" id="tab_bar">
-                    <property name="view">tab_view</property>
+                    <property name="autohide">True</property>
                     <property name="expand-tabs">False</property>
-                    <style>
-                      <class name="inline" />
-                    </style>
+                    <property name="view">tab_view</property>
+                    <property name="start-action-widget">
+                      <object class="GtkButton">
+                        <property name="action-name">win.new_file</property>
+                        <style>
+                          <class name="flat" />
+                        </style>
+                        <property name="child">
+                          <object class="AdwButtonContent">
+                            <property name="icon-name">list-add-symbolic</property>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
                   </object>
                 </child>
 
+                <!-- Separator -->
                 <child>
                   <object class="GtkSeparator" />
                 </child>
 
+                <!-- Tab view -->
                 <child>
                   <object class="AdwToastOverlay" id="toast_overlay">
                     <property name="child">

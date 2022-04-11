@@ -17,13 +17,22 @@
 
 from pathlib import Path
 
-from gi.repository import Adw, Gio, Gtk, GtkSource
+from gi.repository import Gio, Gtk, GtkSource
 
 
 # Subclass GtkSource.View to add custom features.
 class Codeview(GtkSource.View):
     def __init__(self) -> None:
         super().__init__()
+
+        # Get the application settings
+        self.settings = Gio.Settings(schema_id="dev.eglenelidgamaliel.code")
+
+        # Connect to the settings style-scheme change signal
+        self.settings.connect("changed::code-view-style-scheme", self.on_style_scheme_changed)
+        self.on_style_scheme_changed(self.settings, "code-view-style-scheme")
+
+        # Set GtkSource.View properties
         self.set_show_line_numbers(True)
         self.set_auto_indent(True)
         self.set_highlight_current_line(True)
@@ -32,6 +41,11 @@ class Codeview(GtkSource.View):
         self.set_bottom_margin(10)
 
         self.file = None
+
+    def on_style_scheme_changed(self, settings: Gio.Settings, key: str) -> None:
+        style_scheme_id = settings.get_string("code-view-style-scheme")
+        style_scheme = GtkSource.StyleSchemeManager.get_default().get_scheme(style_scheme_id)
+        self.get_buffer().set_style_scheme(style_scheme)
 
 
 # Subclass Gtk.TreeStore to add custom features.
@@ -60,9 +74,10 @@ class FileExplorerView(Gtk.TreeView):
 
         self.set_enable_tree_lines(True)
         self.set_headers_visible(False)
-        self.get_style_context().add_class("navigation-sidebar")
+        self.set_fixed_height_mode(True)
 
         for i, column_title in enumerate(["Files"]):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
+            column.set_property("sizing", Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(column)

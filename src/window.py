@@ -18,7 +18,7 @@
 import time
 from pathlib import Path
 
-from gi.repository import Adw, Gio, GLib, Gtk
+from gi.repository import Adw, Gio, GLib, Gtk, GtkSource
 
 from .widgets import Codeview, FileExplorerView
 
@@ -251,10 +251,14 @@ class CodeWindow(Adw.ApplicationWindow):
             except Exception:
                 pass
 
+            # Create the file explorer view
             self.tree_view = FileExplorerView(dialog.get_file())
             select = self.tree_view.get_selection()
             select.connect("changed", self.on_tree_selection_changed)
             self.sidebar_box.append(self.tree_view)
+
+            # Reveal the sidebar
+            self.flap.set_reveal_flap(True)
 
         # Release the reference on the file selection dialog now that we
         # do not need it any more
@@ -302,11 +306,20 @@ class AboutDialog(Gtk.AboutDialog):
 class PreferencesWindow(Adw.PreferencesWindow):
     __gtype_name__ = "PreferencesWindow"
 
-    # preferences_box = Gtk.Template.Child()
+    preferences_style_group = Gtk.Template.Child()
 
-    def __init__(self, parent):
+    def __init__(self, window):
         Adw.PreferencesWindow.__init__(self)
-        self.props.modal = True
-        self.set_transient_for(parent)
 
-        # self.preferences_box.append(GtkSource.StyleSchemeChooserButton())
+        self.props.modal = True
+        self.set_transient_for(window)
+
+        self.settings = Gio.Settings(schema_id="dev.eglenelidgamaliel.code")
+
+        style_chooser = GtkSource.StyleSchemeChooserWidget()
+        style_chooser.connect("notify::style-scheme", self.on_scheme_changed)
+
+        self.preferences_style_group.add(style_chooser)
+
+    def on_scheme_changed(self, widget, param):
+        self.settings.set_string("code-view-style-scheme", widget.get_style_scheme().get_id())
