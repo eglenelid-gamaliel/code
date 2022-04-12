@@ -76,6 +76,8 @@ class FileExplorerView(Gtk.TreeView):
         self.set_headers_visible(False)
         self.set_fixed_height_mode(True)
 
+        self.get_style_context().add_class("navigation-sidebar")
+
         for i, column_title in enumerate(["Files"]):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)

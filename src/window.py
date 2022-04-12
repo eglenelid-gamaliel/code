@@ -74,7 +74,7 @@ class CodeWindow(Adw.ApplicationWindow):
         save_as_action.connect("activate", self.save_as_file_dialog)
         self.add_action(save_as_action)
 
-        # Create the GSettings instance for the app schema id
+        # Get the GSettings instance for the app schema id
         self.settings = Gio.Settings(schema_id="dev.eglenelidgamaliel.code")
 
         # Remember the window size
@@ -82,13 +82,14 @@ class CodeWindow(Adw.ApplicationWindow):
         self.settings.bind("window-height", self, "default-height", Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind("window-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT)
 
+    # Callback for the sidebar toggle action
     def on_toggle_sidebar(self, action, _):
         self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
 
     # Save (or overwrite) the file
     def save(self, action, _):
-        # Check if there is a file associated with the current code view
         code_view = self.tab_view.get_selected_page().get_child().get_child()
+        # If the code view has no file, call the save as dialog
         if code_view.file:
             self.save_file(code_view.file)
         else:
@@ -134,10 +135,15 @@ class CodeWindow(Adw.ApplicationWindow):
         file.replace_contents_bytes_async(bytes, None, False, Gio.FileCreateFlags.NONE, None, self.save_file_complete)
 
     # Function called when the file contents finish saving
-    def save_file_complete(self, file, result):
+    def save_file_complete(self, file: Gio.File, result):
         code_view = self.tab_view.get_selected_page().get_child().get_child()
         code_view.file = file
 
+        # Update the code view language
+        code_buffer = code_view.get_buffer()
+        code_buffer.set_language(GtkSource.LanguageManager.get_default().guess_language(file.get_path()))
+
+        # Update the title of the code view tab
         current_page = self.tab_view.get_selected_page()
         current_page.set_title(file.get_basename())
         current_page.set_tooltip(file.get_path())
@@ -207,6 +213,7 @@ class CodeWindow(Adw.ApplicationWindow):
         # Load the file contents into the editor instance
         buffer = new_gtksource_view.get_buffer()
         buffer.set_text(text)
+        buffer.set_language(GtkSource.LanguageManager.get_default().guess_language(file.get_path()))
 
         # Place the cursor at the beginning of the file
         start = buffer.get_start_iter()
@@ -240,21 +247,24 @@ class CodeWindow(Adw.ApplicationWindow):
     def on_open_folder_response(self, dialog, response):
         # If the user selected a file...
         if response == Gtk.ResponseType.ACCEPT:
-            # ... retrieve the location from the dialog and open it
+            # Hide the folder chooser button
             self.open_folder_button.set_visible(False)
 
-            folder_path = Path(dialog.get_file().get_path())
-            self.window_title.set_title(folder_path.name)
+            # Set the window title to the folder name
+            self.window_title.set_title(dialog.get_file().get_basename())
 
-            try:
+            # If there is already a folder open, remove it
+            if self.tree_view:
                 self.sidebar_box.remove(self.tree_view)
-            except Exception:
-                pass
 
             # Create the file explorer view
             self.tree_view = FileExplorerView(dialog.get_file())
+
+            # Connect the selection "changed" signal of the file explorer view
             select = self.tree_view.get_selection()
             select.connect("changed", self.on_tree_selection_changed)
+
+            # Add the file explorer view to the sidebar
             self.sidebar_box.append(self.tree_view)
 
             # Reveal the sidebar
