@@ -37,7 +37,7 @@
                 <property name="orientation">horizontal</property>
                 <property name="spacing">30</property>
 
-                <!-- Sidebar toogle button -->
+                <!-- Sidebar toggle button -->
                 <child>
                   <object class="GtkToggleButton" id="toggle_sidebar">
                     <property name="active">False</property>

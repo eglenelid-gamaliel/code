@@ -56,13 +56,30 @@
           <object class="GtkShortcutsGroup">
             <property name="title" translatable="yes" context="shortcut window">Window</property>
 
-            <!-- App actions -->
+            <!-- App toggle sidebar -->
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Toogle sidebar</property>
+                <property name="title" translatable="yes" context="shortcut window">Toggle sidebar</property>
                 <property name="action-name">win.toggle_sidebar</property>
               </object>
             </child>
+          </object>
+        </child>
+
+        <!-- Application actions -->
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes" context="shortcut window">Application</property>
+
+            <!-- App preferences -->
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Preferences</property>
+                <property name="action-name">win.toggle_sidebar</property>
+              </object>
+            </child>
+
+            <!-- App quit -->
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Quit</property>
