@@ -148,7 +148,8 @@
                 <!-- Tab bar -->
                 <child>
                   <object class="AdwTabBar" id="tab_bar">
-                    <property name="autohide">True</property>
+                    <!-- Tab bar properties -->
+                    <property name="autohide">False</property>
                     <property name="expand-tabs">False</property>
                     <property name="view">tab_view</property>
                     <property name="start-action-widget">
