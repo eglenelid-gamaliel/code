@@ -51,6 +51,7 @@ class CodeApplication(Adw.Application):
         self.set_accels_for_action("win.save", ["<Ctrl>s"])
         self.set_accels_for_action("win.save_as", ["<Ctrl><Shift>s"])
         # Application actions
+        self.set_accels_for_action("app.preferences", ["<Ctrl>comma"])
         self.set_accels_for_action("app.quit", ["<Ctrl>q"])
 
     def do_activate(self):
