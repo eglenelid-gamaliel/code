@@ -45,7 +45,7 @@
             <!-- Save file as -->
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes" context="shortcut window">Save As</property>
+                <property name="title" translatable="yes" context="shortcut window">Save as...</property>
                 <property name="action-name">win.save_as</property>
               </object>
             </child>
