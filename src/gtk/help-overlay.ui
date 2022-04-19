@@ -6,6 +6,8 @@
       <object class="GtkShortcutsSection">
         <property name="section-name">shortcuts</property>
         <property name="max-height">10</property>
+
+        <!-- File actions -->
         <child>
           <object class="GtkShortcutsGroup">
             <property name="title" translatable="yes" context="shortcut window">Files</property>
@@ -52,6 +54,7 @@
           </object>
         </child>
 
+        <!-- Window actions -->
         <child>
           <object class="GtkShortcutsGroup">
             <property name="title" translatable="yes" context="shortcut window">Window</property>
