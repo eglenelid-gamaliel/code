@@ -23,7 +23,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 gi.require_version("GtkSource", "5")
 
-from gi.repository import Adw, Gio, GObject, Gtk, GtkSource
+from gi.repository import Adw, Gdk, Gio, GObject, Gtk, GtkSource
 
 from .window import AboutDialog, CodeWindow, PreferencesWindow
 
@@ -53,6 +53,19 @@ class CodeApplication(Adw.Application):
         # Application actions
         self.set_accels_for_action("app.preferences", ["<Ctrl>comma"])
         self.set_accels_for_action("app.quit", ["<Ctrl>q"])
+
+        # Set the application custom css
+        css = b"""
+            treeview.navigation-sidebar {
+	            border-radius: 5px;
+	            padding: 2px 2px 2px 2px;
+            }
+        """
+        style_provider = Gtk.CssProvider()
+        style_provider.load_from_data(css)
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(), style_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
     def do_activate(self):
         """Called when the application is activated.
