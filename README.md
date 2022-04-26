@@ -30,11 +30,14 @@ Currently the project it's on early development stages
   - Make the app themeable
 
   **UI**
+  - Search file
   - Have a toggleable terminal targetting to the workspace folder
   - Be GNOME Human Interface Guidelines compliant (Icons, alerts, toasts, etc)
   - Make the file explorer detect changes in the current directory and update the sidebar accordingly
 
   **Source View**
+  - Search
+  - Go to line
   - Make the font famity and size configurable through the preferences window
   - Properly handle indentation (tabs and spaces)
 
