@@ -30,7 +30,6 @@ Currently the project it's on early development stages
   - Make the app themeable
 
   **UI**
-  - Properly style the treeview
   - Have a toggleable terminal targetting to the workspace folder
   - Be GNOME Human Interface Guidelines compliant (Icons, alerts, toasts, etc)
   - Make the file explorer detect changes in the current directory and update the sidebar accordingly
