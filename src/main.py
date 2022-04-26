@@ -56,10 +56,9 @@ class CodeApplication(Adw.Application):
 
         # Set the application custom css
         css = b"""
-            treeview.navigation-sidebar {
-	            border-radius: 5px;
-	            padding: 2px 2px 2px 2px;
-            }
+            treeview.navigation-sidebar {border-radius: 5px; padding: 2px 2px 2px 2px;}
+            
+            treeview.navigation-sidebar > *:hover {background-color: @headerbar_bg_color;}
         """
         style_provider = Gtk.CssProvider()
         style_provider.load_from_data(css)

@@ -23,12 +23,12 @@ from gi.repository import Adw, Gio, GLib, Gtk, GtkSource
 from .widgets import Codeview, FileExplorerView
 
 
+# Main window class
 @Gtk.Template(resource_path="/dev/eglenelidgamaliel/code/window.ui")
 class CodeWindow(Adw.ApplicationWindow):
     __gtype_name__ = "CodeWindow"
 
     # Map widgets from the template
-
     # Window
     window_title = Gtk.Template.Child()
     # Flap
@@ -37,8 +37,11 @@ class CodeWindow(Adw.ApplicationWindow):
     open_folder_button = Gtk.Template.Child()
     sidebar_box = Gtk.Template.Child()
     tree_view = None
+    # Greeter
+    code_greeter = Gtk.Template.Child()
     # Tabs
     toast_overlay = Gtk.Template.Child()
+    tab_bar = Gtk.Template.Child()
     tab_view = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
@@ -66,13 +69,16 @@ class CodeWindow(Adw.ApplicationWindow):
 
         # Create the 'save' action referenced in window.ui
         save_action = Gio.SimpleAction(name="save")
-        save_action.connect("activate", self.save)
+        save_action.connect("activate", self.on_save)
         self.add_action(save_action)
 
         # Create the 'save_as' action referenced in window.ui
         save_as_action = Gio.SimpleAction(name="save_as")
-        save_as_action.connect("activate", self.save_as_file_dialog)
+        save_as_action.connect("activate", self.save_file_dialog)
         self.add_action(save_as_action)
+
+        # Connect the tab bar close-page signal
+        self.tab_view.connect("close-page", self.on_tab_close)
 
         # Get the GSettings instance for the app schema id
         self.settings = Gio.Settings(schema_id="dev.eglenelidgamaliel.code")
@@ -86,17 +92,42 @@ class CodeWindow(Adw.ApplicationWindow):
     def on_toggle_sidebar(self, action, _):
         self.flap.set_reveal_flap(not self.flap.get_reveal_flap())
 
-    # Save (or overwrite) the file
-    def save(self, action, _):
-        code_view = self.tab_view.get_selected_page().get_child().get_child()
-        # If the code view has no file, call the save as dialog
-        if code_view.file:
-            self.save_file(code_view.file)
-        else:
-            self.save_as_file_dialog()
+    # Get current code view
+    def get_current_code_view(self):
+        return self.tab_view.get_selected_page().get_child().get_child()
 
-    # Save the file as
-    def save_as_file_dialog(self, action=None, _=None):
+    # New file action callback
+    def on_new_file(self, action, parameter):
+        # Hide the greeter
+        self.code_greeter.set_visible(False)
+        self.tab_bar.set_visible(True)
+
+        # Create a new editor widget
+        new_gtksource_view = Codeview()
+
+        # Create a new scrolled window to hold the editor
+        new_scrolleable_window = Gtk.ScrolledWindow()
+        new_scrolleable_window.set_child(new_gtksource_view)
+        new_scrolleable_window.set_vexpand(True)
+
+        # Create a new tab and add it to the tabview
+        newly_created_page = self.tab_view.append(new_scrolleable_window)
+        newly_created_page.set_title("Untitled")
+        newly_created_page.set_tooltip("Untitled")
+
+        new_gtksource_view.grab_focus()
+
+    # Save (step 1) write or overwrite the file
+    def on_save(self, action, _):
+        current_code_view = self.get_current_code_view()
+        # If the code view has no file, call the save as dialog
+        if current_code_view.file:
+            self.save_file(current_code_view.file)
+        else:
+            self.save_file_dialog()
+
+    # Save (step 2) open the file chooser dialog
+    def save_file_dialog(self, action=None, _=None):
         self._native = Gtk.FileChooserNative(
             title="Save File As",
             transient_for=self,
@@ -107,17 +138,16 @@ class CodeWindow(Adw.ApplicationWindow):
         self._native.connect("response", self.on_save_response)
         self._native.show()
 
-    # Called when the file chooser dialog is closed
+    # Save (step 3) called when the file chooser dialog is closed
     def on_save_response(self, native, response):
         if response == Gtk.ResponseType.ACCEPT:
             self.save_file(native.get_file())
         self._native = None
 
-    # Function called when the file contents are saved
+    # Save (step 4) called when the file contents are saved
     def save_file(self, file):
-        # Retrieve the current editor widget
-        buffer = self.tab_view.get_selected_page().get_child().get_child().get_buffer()
-
+        # Get the current code view
+        buffer = self.get_current_code_view().get_buffer()
         # Retrieve the iterator at the start of the buffer
         start = buffer.get_start_iter()
         # Retrieve the iterator at the end of the buffer
@@ -134,9 +164,10 @@ class CodeWindow(Adw.ApplicationWindow):
         # Start the asynchronous operation to save the data into the file
         file.replace_contents_bytes_async(bytes, None, False, Gio.FileCreateFlags.NONE, None, self.save_file_complete)
 
-    # Function called when the file contents finish saving
+    # Save (step 5) called when the file contents finish saving
     def save_file_complete(self, file: Gio.File, result):
-        code_view = self.tab_view.get_selected_page().get_child().get_child()
+        # Keep a reference to the file so we can use it later
+        code_view = self.get_current_code_view()
         code_view.file = file
 
         # Update the code view language
@@ -151,7 +182,7 @@ class CodeWindow(Adw.ApplicationWindow):
         # Show a toast for the successful save
         self.toast_overlay.add_toast(Adw.Toast(title="File saved successfully", timeout=1))
 
-    # Open file action callback
+    # Open (step 1) file action callback
     def open_file_dialog(self, action, parameter):
         # Create a new file selection dialog, using the "open" mode
         # and keep a reference to it
@@ -169,7 +200,7 @@ class CodeWindow(Adw.ApplicationWindow):
         # Present the dialog to the user
         self._native.show()
 
-    # Called when the file chooser dialog is closed
+    # Open (step 2) called when the file chooser dialog is closed
     def on_open_response(self, dialog, response):
         # If the user selected a file...
         if response == Gtk.ResponseType.ACCEPT:
@@ -179,7 +210,7 @@ class CodeWindow(Adw.ApplicationWindow):
         # do not need it any more
         self._native = None
 
-    # Function to open a file asynchronously
+    # Open (step 3) function to open a file asynchronously
     def open_file(self, file):
         file_path = Path(file.get_path())
         if file_path.is_dir():
@@ -190,7 +221,7 @@ class CodeWindow(Adw.ApplicationWindow):
             # Load the file contents asynchronously
             file.load_contents_async(None, self.open_file_complete)
 
-    # Function called when the file contents finish loading
+    # Open (step 4) called when the file contents finish loading
     def open_file_complete(self, file, result):
         contents = file.load_contents_finish(result)
 
@@ -204,6 +235,10 @@ class CodeWindow(Adw.ApplicationWindow):
         except UnicodeError as err:
             path = file.peek_path()
             return
+
+        # Hide the greeter
+        self.code_greeter.set_visible(False)
+        self.tab_bar.set_visible(True)
 
         # Create a new editor widget
         new_gtksource_view = Codeview()
@@ -231,7 +266,7 @@ class CodeWindow(Adw.ApplicationWindow):
 
         new_gtksource_view.grab_focus()
 
-    # Open folder action callback
+    # Open folder (step 1) action callback
     def open_folder_dialog(self, action, parameter):
         self._native = Gtk.FileChooserNative(
             title="Open folder",
@@ -243,7 +278,7 @@ class CodeWindow(Adw.ApplicationWindow):
         self._native.connect("response", self.on_open_folder_response)
         self._native.show()
 
-    # Called when the folder chooser dialog is closed
+    # Open folder (step 2) called when the folder chooser dialog is closed
     def on_open_folder_response(self, dialog, response):
         # If the user selected a file...
         if response == Gtk.ResponseType.ACCEPT:
@@ -274,6 +309,7 @@ class CodeWindow(Adw.ApplicationWindow):
         # do not need it any more
         self._native = None
 
+    # Called when the user selects a file in the file explorer view
     def on_tree_selection_changed(self, selection):
         model, treeiter = selection.get_selected()
         if treeiter is not None:
@@ -282,24 +318,14 @@ class CodeWindow(Adw.ApplicationWindow):
                 gfile = Gio.File.new_for_path(model[treeiter][1])
                 self.open_file(gfile)
 
-    # New file action callback
-    def on_new_file(self, action, parameter):
-        # Create a new editor widget
-        new_gtksource_view = Codeview()
-
-        # Create a new scrolled window to hold the editor
-        new_scrolleable_window = Gtk.ScrolledWindow()
-        new_scrolleable_window.set_child(new_gtksource_view)
-        new_scrolleable_window.set_vexpand(True)
-
-        # Create a new tab and add it to the tabview
-        newly_created_page = self.tab_view.append(new_scrolleable_window)
-        newly_created_page.set_title("Untitled")
-        newly_created_page.set_tooltip("Untitled")
-
-        new_gtksource_view.grab_focus()
+    # Called when the user closes a tab
+    def on_tab_close(self, tab_view, tab_page):
+        if self.tab_view.get_n_pages() == 1:
+            self.code_greeter.set_visible(True)
+            self.tab_bar.set_visible(False)
 
 
+# About dialog
 class AboutDialog(Gtk.AboutDialog):
     def __init__(self, parent):
         Gtk.AboutDialog.__init__(self)
@@ -312,6 +338,7 @@ class AboutDialog(Gtk.AboutDialog):
         self.set_transient_for(parent)
 
 
+# Preferences dialog
 @Gtk.Template(resource_path="/dev/eglenelidgamaliel/code/gtk/preferences_window.ui")
 class PreferencesWindow(Adw.PreferencesWindow):
     __gtype_name__ = "PreferencesWindow"

@@ -20,22 +20,21 @@
         <!-- Header bar -->
         <child type="titlebar">
           <object class="AdwHeaderBar">
-            <style>
-              <class name="flat" />
-            </style>
 
             <!-- Header bar title widget -->
             <property name="title-widget">
               <object class="AdwWindowTitle" id="window_title">
 
                 <!-- Title -->
-                <property name="title" translatable="yes">Code</property>
+                <property name="title" translatable="yes"></property>
 
               </object>
             </property>
 
-            <!-- Header bar actions -->
+            <!-- Header bar start widgets -->
             <child type="start">
+
+              <!-- Container to hold buttons -->
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
                 <property name="spacing">30</property>
@@ -43,7 +42,7 @@
                 <!-- Sidebar toggle button -->
                 <child>
                   <object class="GtkToggleButton" id="toggle_sidebar">
-                    <property name="active">False</property>
+                    <property name="active">true</property>
                     <property name="child">
                       <object class="AdwButtonContent">
                         <property name="icon-name">sidebar-show-symbolic</property>
@@ -54,7 +53,7 @@
               </object>
             </child>
 
-            <!-- Main menu button at the end -->
+            <!-- Header bar end widgets -->
             <child type="end">
               <object class="GtkMenuButton">
                 <property name="icon-name">open-menu-symbolic</property>
@@ -64,6 +63,7 @@
           </object>
         </child>
 
+        <!-- Window separator -->
         <child>
           <object class="GtkSeparator"></object>
         </child>
@@ -155,26 +155,87 @@
                 <!-- Tab bar -->
                 <child>
                   <object class="AdwTabBar" id="tab_bar">
-                    <style>
-                      <class name="inline" />
-                    </style>
                     <!-- Tab bar properties -->
-                    <property name="autohide">True</property>
+                    <property name="autohide">False</property>
                     <property name="expand-tabs">False</property>
                     <property name="view">tab_view</property>
-                    <property name="start-action-widget">
-                      <object class="GtkButton">
-                        <property name="action-name">win.new_file</property>
-                        <style>
-                          <class name="flat" />
-                        </style>
+                    <property name="visible">False</property>
+                  </object>
+                </child>
+
+                <!-- Initial page -->
+                <child>
+                  <object class="GtkCenterBox" id="code_greeter">
+                    <property name="orientation">vertical</property>
+                    <property name="vexpand">True</property>
+                    <child type="center">
+                      <object class="AdwStatusPage">
+                        <property name="margin-start">30</property>
+                        <property name="margin-end">30</property>
+                        <property name="title">Code</property>
+                        <property name="description" translatable="yes">Welcome to code! Select an option to get started.</property>
                         <property name="child">
-                          <object class="AdwButtonContent">
-                            <property name="icon-name">list-add-symbolic</property>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">12</property>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="child">
+                                  <object class="AdwButtonContent">
+                                    <property name="icon-name">document-new-symbolic</property>
+                                    <property name="label" translatable="yes">_New file</property>
+                                    <property name="use-underline">True</property>
+                                  </object>
+                                </property>
+                                <property name="action-name">win.new_file</property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="accent" />
+                                  <class name="pill" />
+                                  <class name="raised" />
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="child">
+                                  <object class="AdwButtonContent">
+                                    <property name="icon-name">document-open-symbolic</property>
+                                    <property name="label" translatable="yes">_Open file</property>
+                                    <property name="use-underline">True</property>
+                                  </object>
+                                </property>
+                                <property name="action-name">win.open_file</property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="accent" />
+                                  <class name="pill" />
+                                  <class name="raised" />
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="child">
+                                  <object class="AdwButtonContent">
+                                    <property name="icon-name">folder-new-symbolic</property>
+                                    <property name="label" translatable="yes">_Open folder</property>
+                                    <property name="use-underline">True</property>
+                                  </object>
+                                </property>
+                                <property name="action-name">win.open_folder</property>
+                                <property name="halign">center</property>
+                                <style>
+                                  <class name="accent" />
+                                  <class name="pill" />
+                                  <class name="raised" />
+                                </style>
+                              </object>
+                            </child>
                           </object>
                         </property>
                       </object>
-                    </property>
+                    </child>
                   </object>
                 </child>
 
