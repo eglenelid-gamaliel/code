@@ -67,14 +67,21 @@ class FileExplorerTreeStore(Gtk.TreeStore):
 
 # Subclass Gtk.TreeView to add custom features.
 class FileExplorerView(Gtk.TreeView):
-    def __init__(self, folder) -> Gtk.TreeView:
+    def __init__(self, folder, file_explorer_search) -> Gtk.TreeView:
         self.model = FileExplorerTreeStore(folder)
 
         super().__init__(model=self.model)
 
+        # Set Gtk.TreeView properties
         self.set_enable_tree_lines(True)
         self.set_headers_visible(False)
         self.set_fixed_height_mode(True)
+
+        # Search
+        self.set_enable_search(True)
+        self.set_search_entry(file_explorer_search)
+        self.set_search_equal_func(self.search_function)
+        self.set_search_column(0)
 
         self.get_style_context().add_class("navigation-sidebar")
 
@@ -83,3 +90,18 @@ class FileExplorerView(Gtk.TreeView):
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             column.set_property("sizing", Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(column)
+
+    def search_function(self, model, column, key, rowiter):
+        row = model[rowiter]
+        if key.lower() in list(row)[column - 1].lower():
+            return False  # Search matches
+
+        # Search in child rows.  If one of the rows matches, expand the row so that it will be open in later checks.
+        for inner in row.iterchildren():
+            if key.lower() in list(inner)[column - 1].lower():
+                self.expand_to_path(row.path)
+                break
+        else:
+            self.collapse_row(row.path)
+
+        return True  # Search does not match

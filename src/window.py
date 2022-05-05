@@ -36,6 +36,7 @@ class CodeWindow(Adw.ApplicationWindow):
     # Sidebar
     open_folder_button = Gtk.Template.Child()
     sidebar_box = Gtk.Template.Child()
+    file_explorer_search = Gtk.Template.Child()
     tree_view = None
     # Greeter
     code_greeter = Gtk.Template.Child()
@@ -135,6 +136,7 @@ class CodeWindow(Adw.ApplicationWindow):
             accept_label="_Save",
             cancel_label="_Cancel",
         )
+        self._native.props.modal = True
         self._native.connect("response", self.on_save_response)
         self._native.show()
 
@@ -193,6 +195,7 @@ class CodeWindow(Adw.ApplicationWindow):
             accept_label="_Open",
             cancel_label="_Cancel",
         )
+        self._native.props.modal = True
         # Connect the "response" signal of the file selection dialog;
         # this signal is emitted when the user selects a file, or when
         # they cancel the operation
@@ -275,6 +278,7 @@ class CodeWindow(Adw.ApplicationWindow):
             accept_label="_Open",
             cancel_label="_Cancel",
         )
+        self._native.props.modal = True
         self._native.connect("response", self.on_open_folder_response)
         self._native.show()
 
@@ -293,7 +297,7 @@ class CodeWindow(Adw.ApplicationWindow):
                 self.sidebar_box.remove(self.tree_view)
 
             # Create the file explorer view
-            self.tree_view = FileExplorerView(dialog.get_file())
+            self.tree_view = FileExplorerView(dialog.get_file(), self.file_explorer_search)
 
             # Connect the selection "changed" signal of the file explorer view
             select = self.tree_view.get_selection()
@@ -301,6 +305,9 @@ class CodeWindow(Adw.ApplicationWindow):
 
             # Add the file explorer view to the sidebar
             self.sidebar_box.append(self.tree_view)
+
+            # Reveal the search entry
+            self.file_explorer_search.set_visible(True)
 
             # Reveal the sidebar
             self.flap.set_reveal_flap(True)
